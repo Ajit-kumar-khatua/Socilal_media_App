@@ -111,6 +111,10 @@ apiRouter.post("/posts",async (req,res)=>{
     try {
         let createdAt=Date.now()
         let post=await PostModel.insertMany({user,text,image,createdAt,likes,comments})
+        let userData=await UserModel.find({_id:user})
+        userData[0].posts.push(post[0]._id)
+        let payload=userData[0]
+        await UserModel.findByIdAndUpdate({_id:user},payload)
         res.send("post created sucessfully.")
     } catch (error) {
         console.log(error)
