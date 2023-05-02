@@ -160,11 +160,12 @@ apiRouter.delete("/posts/:id",async (req,res)=>{
 
 apiRouter.post("/posts/:id/like",async (req,res)=>{
     let id=req.params.id
-    let likeUserId=req.body
+    let {likeUserId}=req.body
     try {
         let post=await PostModel.findById(id)
         post.likes.push(likeUserId)
-        await PostModel.findByIdAndUpdate({_id:id},post)
+        let payload=post
+        await PostModel.findByIdAndUpdate({_id:id},payload)
         res.send("User Like the post")
         
     } catch (error) {
@@ -172,6 +173,35 @@ apiRouter.post("/posts/:id/like",async (req,res)=>{
         res.send("error while like a post") 
     }
 })
+
+apiRouter.post("/posts/:id/comment",async (req,res)=>{
+    let id=req.params.id
+    let {UserId,text}=req.body
+    try {
+        let post=await PostModel.findById(id)
+        let createdAt=Date.now()
+        post.comments.push({UserId,text,createdAt})
+        let payload=post
+        await PostModel.findByIdAndUpdate({_id:id},payload)
+        res.send("User cooment on the post")
+        
+    } catch (error) {
+        console.log(error)
+        res.send("error while like a post") 
+    }
+})
+
+apiRouter.get("/posts/:id",async (req,res)=>{
+    let id=req.params.id
+    try {
+        let post=await PostModel.find({_id:id})
+        res.send(post)
+        
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 
 
 module.exports={
